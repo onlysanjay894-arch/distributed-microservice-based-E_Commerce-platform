@@ -1,0 +1,829 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyShop - Online Shopping</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #2874f0;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .logo img {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: white;
+        }
+
+        /* SEARCH */
+        .search-box {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+        }
+
+        .search-box input {
+            width: 100%;
+            min-width: 0;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 12px 20px;
+            border: none;
+            background-color: #ff9f00;
+            color: white;
+            font-weight: bold;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-box button:hover {
+            background-color: #e88e00;
+        }
+
+        /* HEADER LINKS */
+        .cart-link,
+        .my-orders-link,
+        .login-btn,
+        .register-btn,
+        .wishlist-nav-btn {
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .cart-link,
+        .my-orders-link {
+            color: white;
+            font-size: 15px;
+        }
+
+        .cart-link:hover,
+        .my-orders-link:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn,
+        .register-btn {
+            background-color: white;
+            color: #2874f0;
+            padding: 10px 16px;
+            border-radius: 5px;
+        }
+
+        .login-btn:hover,
+        .register-btn:hover {
+            background-color: #eeeeee;
+        }
+
+        .welcome-user {
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .wishlist-nav-btn {
+            background: #e91e63;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 7px;
+            box-shadow: 0 4px 0 #b7154a;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .wishlist-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #b7154a;
+        }
+
+        /* WELCOME */
+        .welcome {
+            text-align: center;
+            background-color: white;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+        }
+
+        .welcome h1 {
+            margin: 0 0 10px;
+            color: #2874f0;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: #555;
+        }
+
+        /* CATEGORIES */
+        .categories {
+            background-color: white;
+            padding: 20px 40px;
+            margin-bottom: 20px;
+        }
+
+        .categories h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .category-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .category {
+            background-color: #2874f0;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .category:hover {
+            background-color: #1557c0;
+            transform: translateY(-2px);
+        }
+
+        /* PRODUCTS */
+        .products-section {
+            padding: 20px 40px;
+        }
+
+        .products-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .sort-box {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sort-box label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sort-box select {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .sort-box select:focus {
+            border-color: #2874f0;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        /* PRODUCT CARD */
+        .product-card {
+            min-width: 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.13);
+        }
+
+        /* PRODUCT IMAGE AND ZOOM */
+        .image-zoom {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            cursor: crosshair;
+        }
+
+        .image-zoom img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .zoom-result {
+            display: none;
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 2px solid #2874f0;
+            border-radius: 5px;
+            pointer-events: none;
+            background-repeat: no-repeat;
+            background-color: white;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .product-card h3 {
+            margin: 5px 0;
+            color: #333;
+            overflow-wrap: anywhere;
+        }
+
+        .product-card p {
+            color: #666;
+            min-height: 40px;
+            overflow-wrap: anywhere;
+        }
+
+        /* PRICE */
+        .price {
+            color: #2874f0;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        /* STOCK */
+        .stock {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .available {
+            color: green;
+        }
+
+        .out-of-stock {
+            color: red;
+        }
+
+        /* CART BUTTON */
+        .cart-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: #ff9800;
+            color: white;
+            padding: 11px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #d57d00;
+            transition: transform 0.2s, box-shadow 0.2s,
+                        background-color 0.2s;
+        }
+
+        .cart-btn:hover {
+            background-color: #e88e00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #d57d00;
+        }
+
+        .cart-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #d57d00;
+        }
+
+        .disabled-btn,
+        .disabled-btn:hover {
+            background-color: #999;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* PAGINATION */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 35px 0;
+            padding: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            display: inline-block;
+            padding: 12px 22px;
+            background: linear-gradient(145deg, #2874f0, #1557c0);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 5px 0 #10459b;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .page-btn:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #10459b;
+        }
+
+        .page-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #10459b;
+        }
+
+        .page-info {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #172337;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 900px) {
+            header {
+                padding: 15px;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .search-box {
+                order: 5;
+                flex: 1 1 100%;
+            }
+
+            .welcome-user {
+                font-size: 14px;
+            }
+
+            .wishlist-nav-btn,
+            .login-btn,
+            .register-btn {
+                padding: 9px 12px;
+            }
+
+            .products-section {
+                padding: 20px;
+            }
+
+            .categories {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .product-card {
+                padding: 12px;
+            }
+
+            .image-zoom {
+                height: 145px;
+            }
+
+            .product-card h3 {
+                font-size: 15px;
+            }
+
+            .product-card p {
+                font-size: 13px;
+            }
+
+            .price {
+                font-size: 17px;
+            }
+
+            .categories,
+            .products-section {
+                padding: 14px;
+            }
+
+            .category-list {
+                gap: 8px;
+            }
+
+            .category {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .pagination {
+                gap: 12px;
+            }
+
+            .page-btn {
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+
+    <div class="logo">
+        <img
+            src="{% static 'images/my shop logo.png' %}"
+            alt="MyShop Logo"
+        >
+        <span>MyShop</span>
+    </div>
+
+    <!-- SEARCH -->
+    <form class="search-box" method="GET" action="{% url 'home' %}">
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="Search for products..."
+            aria-label="Search products"
+        >
+
+        {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+        {% endif %}
+
+        {% if sort %}
+            <input type="hidden" name="sort" value="{{ sort }}">
+        {% endif %}
+
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- CART -->
+    <a href="{% url 'cart' %}" class="cart-link">
+        🛒 Cart
+    </a>
+
+    {% if user.is_authenticated %}
+
+        <!-- NEW: MY ORDERS LINK -->
+        <a href="{% url 'my_orders' %}" class="my-orders-link">
+            📦 My Orders
+        </a>
+
+        <span class="welcome-user">
+            Hi, {{ user.username }}
+        </span>
+
+        <a href="{% url 'logout' %}" class="login-btn">
+            Logout
+        </a>
+
+        <a href="{% url 'my_wishlist' %}" class="wishlist-nav-btn">
+            ❤️ Wishlist
+        </a>
+
+    {% else %}
+
+        <a href="{% url 'login' %}" class="login-btn">
+            Login
+        </a>
+
+        <a href="{% url 'register' %}" class="register-btn">
+            Register
+        </a>
+
+    {% endif %}
+
+</header>
+
+<!-- WELCOME -->
+<section class="welcome">
+    <h1>Welcome to MyShop</h1>
+    <p>Shop your favorite products at the best prices.</p>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories">
+
+    <h2>Categories</h2>
+
+    <div class="category-list">
+
+        {% for category in categories %}
+
+            <a
+                href="{% url 'home' %}?category={{ category.id }}{% if search %}&search={{ search|urlencode }}{% endif %}{% if sort %}&sort={{ sort|urlencode }}{% endif %}"
+                class="category"
+            >
+                {{ category.name }}
+            </a>
+
+        {% empty %}
+
+            <p>No categories available.</p>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section">
+
+    <h2>Featured Products</h2>
+
+    <!-- SORTING -->
+    <form
+        method="GET"
+        action="{% url 'home' %}"
+        class="sort-box"
+    >
+
+        {% if search %}
+            <input type="hidden" name="search" value="{{ search }}">
+        {% endif %}
+
+        {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+        {% endif %}
+
+        <label for="sort">Sort by:</label>
+
+        <select
+            id="sort"
+            name="sort"
+            onchange="this.form.submit()"
+        >
+            <option value="" {% if not sort %}selected{% endif %}>
+                Default
+            </option>
+
+            <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>
+                Price: Low → High
+            </option>
+
+            <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>
+                Price: High → Low
+            </option>
+
+            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>
+                Newest
+            </option>
+        </select>
+
+    </form>
+
+    <!-- PRODUCT GRID -->
+    <div class="product-grid">
+
+        {% for product in products %}
+
+            <div class="product-card">
+
+                <!-- PRODUCT IMAGE -->
+                <div class="image-zoom">
+
+                    <a href="{% url 'product_detail' product.id %}">
+
+                        {% if product.image %}
+                            <img
+                                src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <img
+                                src="{% static 'images/my shop logo.png' %}"
+                                alt="No product image available"
+                                loading="lazy"
+                            >
+                        {% endif %}
+
+                    </a>
+
+                    <div class="zoom-result"></div>
+
+                </div>
+
+                <!-- NAME -->
+                <h3>{{ product.name }}</h3>
+
+                <!-- DESCRIPTION -->
+                <p>{{ product.description }}</p>
+
+                <!-- PRICE -->
+                <div class="price">
+                    ₹{{ product.price }}
+                </div>
+
+                <!-- STOCK -->
+                {% if product.stock > 0 %}
+
+                    <div class="stock available">
+                        Stock: {{ product.stock }}
+                    </div>
+
+                    <a
+                        href="{% url 'add_to_cart' product.id %}"
+                        class="cart-btn"
+                    >
+                        Add to Cart
+                    </a>
+
+                {% else %}
+
+                    <div class="stock out-of-stock">
+                        Out of Stock
+                    </div>
+
+                    <button
+                        class="cart-btn disabled-btn"
+                        type="button"
+                        disabled
+                    >
+                        Out of Stock
+                    </button>
+
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+
+            <p>No products match your search or selected category.</p>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.has_other_pages %}
+
+        <div class="pagination-container">
+
+            <nav class="pagination" aria-label="Product pages">
+
+                {% if page_obj.has_previous %}
+
+                    <a
+                        href="?{% if search %}search={{ search|urlencode }}&amp;{% endif %}{% if selected_category %}category={{ selected_category|urlencode }}&amp;{% endif %}{% if sort %}sort={{ sort|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}"
+                        class="page-btn"
+                    >
+                        &laquo; Previous
+                    </a>
+
+                {% endif %}
+
+                <span class="page-info">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+
+                    <a
+                        href="?{% if search %}search={{ search|urlencode }}&amp;{% endif %}{% if selected_category %}category={{ selected_category|urlencode }}&amp;{% endif %}{% if sort %}sort={{ sort|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}"
+                        class="page-btn"
+                    >
+                        Next &raquo;
+                    </a>
+
+                {% endif %}
+
+            </nav>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2026 MyShop. All Rights Reserved.</p>
+</footer>
+
+<!-- IMAGE ZOOM -->
+<script>
+    const zoomBoxes = document.querySelectorAll('.image-zoom');
+
+    zoomBoxes.forEach(function(box) {
+
+        const image = box.querySelector('img');
+        const zoomResult = box.querySelector('.zoom-result');
+
+        if (!image || !zoomResult) {
+            return;
+        }
+
+        box.addEventListener('mousemove', function(event) {
+
+            if (window.innerWidth <= 768) {
+                return;
+            }
+
+            const rect = box.getBoundingClientRect();
+
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const zoomWidth = Math.min(180, rect.width);
+            const zoomHeight = Math.min(180, rect.height);
+
+            let left = x - (zoomWidth / 2);
+            let top = y - (zoomHeight / 2);
+
+            left = Math.max(0, Math.min(left, rect.width - zoomWidth));
+            top = Math.max(0, Math.min(top, rect.height - zoomHeight));
+
+            zoomResult.style.width = zoomWidth + 'px';
+            zoomResult.style.height = zoomHeight + 'px';
+
+            zoomResult.style.left = left + 'px';
+            zoomResult.style.top = top + 'px';
+
+            const percentX = (x / rect.width) * 100;
+            const percentY = (y / rect.height) * 100;
+
+            zoomResult.style.backgroundImage = "url('" + image.src + "')";
+            zoomResult.style.backgroundSize = '250% 250%';
+            zoomResult.style.backgroundPosition =
+                percentX + '% ' + percentY + '%';
+
+            zoomResult.style.display = 'block';
+        });
+
+        box.addEventListener('mouseleave', function() {
+            zoomResult.style.display = 'none';
+        });
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,724 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyShop - Checkout</title>
+
+    <style>
+
+        /* GLOBAL */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        header {
+            background: #2874f0;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 7px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* MAIN LAYOUT */
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .checkout-box,
+        .summary-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .checkout-box:hover,
+        .summary-box:hover {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        /* CUSTOMER FORM */
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2874f0;
+            box-shadow: 0 0 0 3px rgba(40,116,240,0.12);
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        /* MESSAGES */
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #e53935;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #43a047;
+        }
+
+        /* ORDER SUMMARY */
+
+        .product-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            gap: 15px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .quantity {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .price {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* COUPON */
+
+        .coupon-section {
+            margin-top: 25px;
+            padding: 18px;
+            background: #f8f9fa;
+            border: 1px solid #e4e8ef;
+            border-radius: 10px;
+        }
+
+        .coupon-section h3 {
+            margin-bottom: 8px;
+        }
+
+        .coupon-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .coupon-form {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .coupon-form input {
+            flex: 1;
+            min-width: 130px;
+            text-transform: uppercase;
+        }
+
+        .coupon-btn,
+        .remove-coupon-btn {
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .coupon-btn {
+            background: #2874f0;
+        }
+
+        .coupon-btn:hover {
+            background: #1555b5;
+        }
+
+        .remove-coupon-btn {
+            background: #e53935;
+            margin-top: 12px;
+        }
+
+        .remove-coupon-btn:hover {
+            background: #b71c1c;
+        }
+
+        .applied-coupon {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        /* PRICE BREAKDOWN */
+
+        .price-breakdown {
+            margin-top: 22px;
+        }
+
+        .price-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+
+        .discount-value {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2874f0;
+        }
+
+        /* PLACE ORDER */
+
+        .place-order-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #ffb52e, #ff9800);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #c87500,
+                        0 10px 18px rgba(0,0,0,0.18);
+            transition: transform 0.12s ease,
+                        box-shadow 0.12s ease;
+        }
+
+        .place-order-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 #c87500,
+                        0 15px 23px rgba(0,0,0,0.22);
+        }
+
+        .place-order-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #c87500;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 768px) {
+
+            header {
+                padding: 12px 4%;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .logo img {
+                width: 42px;
+                height: 42px;
+            }
+
+            .back-btn {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                width: 92%;
+                gap: 18px;
+            }
+
+            .checkout-box,
+            .summary-box {
+                padding: 20px;
+            }
+
+            .total {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+
+            <img
+                src="{% static 'images/my shop logo.png' %}"
+                alt="MyShop Logo"
+            >
+
+            <span>MyShop</span>
+
+        </div>
+
+        <a href="{% url 'cart' %}" class="back-btn">
+            ← Back to Cart
+        </a>
+
+    </header>
+
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <!-- CUSTOMER DETAILS -->
+
+        <div class="checkout-box">
+
+            <h1>Checkout</h1>
+
+            <p>Enter your delivery details.</p>
+
+            {% if error %}
+
+                <div class="error" role="alert">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+            <form id="payment-form" method="POST" action="{% url 'create_razorpay_order' %}">
+
+                {% csrf_token %}
+
+                <label for="customer_name">Full Name</label>
+
+                <input
+                    type="text"
+                    id="customer_name"
+                    name="customer_name"
+                    placeholder="Enter your full name"
+                    required
+                    value="{{ request.user.get_full_name }}"
+                >
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    value="{{ request.user.email }}"
+                    maxlength="254"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="phone">Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    required
+                >
+
+                <label for="address">Delivery Address</label>
+
+                <textarea
+                    id="address"
+                    name="address"
+                    placeholder="Enter your complete delivery address"
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="place-order-btn"
+                >
+                    🛍️ Place Order
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ORDER SUMMARY -->
+
+        <div class="summary-box">
+
+            <h2>Order Summary</h2>
+
+            {% for item in checkout_items %}
+
+                <div class="product-row">
+
+                    <div>
+
+                        <div class="product-name">
+                            {{ item.product.name }}
+                        </div>
+
+                        <div class="quantity">
+                            Quantity: {{ item.quantity }}
+                        </div>
+
+                    </div>
+
+                    <div class="price">
+                        ₹{{ item.total|floatformat:2 }}
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <p>Your cart has no available items.</p>
+
+            {% endfor %}
+
+
+            <!-- COUPON FORM -->
+
+            <div class="coupon-section">
+
+                <h3>🎟️ Apply Coupon</h3>
+
+                <p class="coupon-description">
+                    Have a promo code? Enter it below to see if
+                    your order qualifies for a discount.
+                </p>
+
+                <form
+                    method="POST"
+                    action="{% url 'checkout' %}"
+                    class="coupon-form"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="apply_coupon"
+                    >
+
+                    <input
+                        type="text"
+                        name="coupon_code"
+                        placeholder="e.g. WELCOME10"
+                        value="{{ coupon_code }}"
+                        maxlength="30"
+                        aria-label="Coupon code"
+                        required
+                    >
+
+                    <button type="submit" class="coupon-btn">
+                        Apply
+                    </button>
+
+                </form>
+
+                {% if coupon %}
+
+                    <p class="applied-coupon">
+                        ✓ Coupon {{ coupon.code }} applied
+                    </p>
+
+                    <form
+                        method="POST"
+                        action="{% url 'checkout' %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="remove_coupon"
+                        >
+
+                        <button
+                            type="submit"
+                            class="remove-coupon-btn"
+                        >
+                            Remove Coupon
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- PRICE BREAKDOWN -->
+
+            <div class="price-breakdown">
+
+                <div class="price-line">
+
+                    <span>Subtotal</span>
+
+                    <span>
+                        ₹{{ subtotal|floatformat:2 }}
+                    </span>
+
+                </div>
+
+                <div class="price-line">
+
+                    <span>Discount</span>
+
+                    <span class="discount-value">
+                        −₹{{ discount_amount|default:0|floatformat:2 }}
+                    </span>
+
+                </div>
+
+                <div class="total">
+
+                    <span>Final Total</span>
+
+                    <span>
+                        ₹{{ final_total|default:subtotal|floatformat:2 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    const paymentForm = document.getElementById('payment-form');
+
+paymentForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const submitButton = paymentForm.querySelector(
+        'button[type="submit"]'
+    );
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Preparing payment...';
+
+    try {
+        const formData = new FormData(paymentForm);
+
+        const response = await fetch(
+            "{% url 'create_razorpay_order' %}",
+            {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Unable to prepare payment.');
+            submitButton.disabled = false;
+            submitButton.textContent = '🛍️ Place Order';
+            return;
+        }
+
+        const options = {
+    key: data.key_id,
+    amount: data.amount,
+    currency: data.currency,
+    name: 'MyShop',
+    description: 'MyShop Order Payment',
+    order_id: data.razorpay_order_id,
+
+    handler: async function (paymentResponse) {
+        const verifyData = new FormData();
+
+        verifyData.append(
+            'csrfmiddlewaretoken',
+            paymentForm.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            ).value
+        );
+
+        verifyData.append(
+            'razorpay_payment_id',
+            paymentResponse.razorpay_payment_id
+        );
+
+        verifyData.append(
+            'razorpay_order_id',
+            paymentResponse.razorpay_order_id
+        );
+
+        verifyData.append(
+            'razorpay_signature',
+            paymentResponse.razorpay_signature
+        );
+
+        verifyData.append(
+            'myshop_order_id',
+            data.myshop_order_id
+        );
+
+        try {
+            const verifyResponse = await fetch(
+                "{% url 'verify_payment' %}",
+                {
+                    method: 'POST',
+                    body: verifyData
+                }
+            );
+
+            const result = await verifyResponse.json();
+
+            if (verifyResponse.ok && result.success) {
+                window.location.href = result.redirect_url;
+            } else {
+                alert(
+                    result.error ||
+                    'Payment verification failed. Please contact support before retrying.'
+                );
+            }
+        } catch (error) {
+            alert(
+                'We could not confirm the payment status. Please check My Orders before retrying.'
+            );
+        }
+    },
+
+    modal: {
+        ondismiss: function () {
+            submitButton.disabled = false;
+            submitButton.textContent = '🛍️ Place Order';
+        }
+    }
+};
+
+const razorpayCheckout = new Razorpay(options);
+
+razorpayCheckout.open();
+
+    } catch (error) {
+        alert('Something went wrong. Please try again.');
+        submitButton.disabled = false;
+        submitButton.textContent = '🛍️ Place Order';
+    }
+});
+    
+</script>
+
+</body>
+
+</html>

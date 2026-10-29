@@ -1,0 +1,422 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Wishlist - MyShop</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f3f6;
+        }
+
+        /* HEADER */
+
+        header {
+            background: #2874f0;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo img {
+            width: 140px;
+            height: 55px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 7px;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* PAGE */
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #222;
+        }
+
+        .page-title span {
+            color: #e91e63;
+        }
+
+        /* WISHLIST GRID */
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .wishlist-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            transition: 0.3s;
+        }
+
+        .wishlist-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.18);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 210px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .product-name {
+            margin-top: 15px;
+            color: #222;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2874f0;
+            margin: 10px 0;
+        }
+
+        .product-stock {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* BUTTONS */
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .view-btn {
+            background: #2874f0;
+            color: white;
+            box-shadow: 0 4px 0 #1555b5;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .remove-btn {
+            background: white;
+            color: #e91e63;
+            border: 2px solid #e91e63;
+            box-shadow: 0 4px 0 #b7154a;
+        }
+
+        .remove-btn:hover {
+            background: #e91e63;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* EMPTY */
+
+        .empty-box {
+            background: white;
+            max-width: 600px;
+            margin: 70px auto;
+            padding: 50px 25px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.12);
+        }
+
+        .heart {
+            font-size: 65px;
+            margin-bottom: 15px;
+        }
+
+        .empty-box h2 {
+            margin-bottom: 10px;
+        }
+
+        .empty-box p {
+            color: #666;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 25px;
+            background: #ff9f00;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 5px 0 #c77800;
+        }
+
+        .shop-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            header {
+                justify-content: center;
+                padding: 12px 15px;
+            }
+
+            .container {
+                padding: 0 12px;
+            }
+
+            .product-image {
+                height: 180px;
+            }
+
+        }
+
+        .cart-btn {
+    background: #ff9f00;
+    color: white;
+    box-shadow: 0 4px 0 #c77800;
+}
+
+.cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #c77800;
+}
+
+.cart-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #c77800;
+}
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <a href="{% url 'home' %}" class="logo">
+        <img
+            src="{% static 'images/my shop logo.png' %}"
+            alt="MyShop Logo"
+        >
+    </a>
+
+    <div class="nav-links">
+
+        <a
+            href="{% url 'home' %}"
+            class="nav-btn"
+        >
+            🏠 Home
+        </a>
+
+        <a
+            href="{% url 'cart' %}"
+            class="nav-btn"
+        >
+            🛒 Cart
+        </a>
+
+        <a
+            href="{% url 'my_orders' %}"
+            class="nav-btn"
+        >
+            📦 My Orders
+        </a>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <h1 class="page-title">
+        ❤️ <span>My Wishlist</span>
+    </h1>
+
+
+    {% if wishlist_items %}
+
+        <div class="wishlist-grid">
+
+            {% for item in wishlist_items %}
+
+                <div class="wishlist-card">
+
+                    {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            alt="{{ item.product.name }}"
+                            class="product-image"
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="product-image"
+                            style="
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                color:#888;
+                            "
+                        >
+                            No Image
+                        </div>
+
+                    {% endif %}
+
+
+                    <h3 class="product-name">
+                        {{ item.product.name }}
+                    </h3>
+
+
+                    <div class="product-price">
+                        ₹{{ item.product.price }}
+                    </div>
+
+
+                    {% if item.product.stock > 0 %}
+
+                        <div class="product-stock">
+                            🟢 In Stock
+                            ({{ item.product.stock }} available)
+                        </div>
+
+                    {% else %}
+
+                        <div class="product-stock">
+                            🔴 Out of Stock
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="button-group">
+
+    <a
+        href="{% url 'product_detail' item.product.id %}"
+        class="btn view-btn"
+    >
+        View Product
+    </a>
+
+    <a
+    href="{% url 'move_to_cart' item.product.id %}"
+    class="btn cart-btn"
+>
+    🛒 Move to Cart
+</a>
+
+    <a
+        href="{% url 'remove_from_wishlist' item.product.id %}"
+        class="btn remove-btn"
+    >
+        ❤️ Remove
+    </a>
+
+</div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-box">
+
+            <div class="heart">
+                ❤️
+            </div>
+
+            <h2>
+                Your Wishlist is Empty
+            </h2>
+
+            <p>
+                Save products you love here and find them easily later.
+            </p>
+
+            <a
+                href="{% url 'home' %}"
+                class="shop-btn"
+            >
+                Start Shopping
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

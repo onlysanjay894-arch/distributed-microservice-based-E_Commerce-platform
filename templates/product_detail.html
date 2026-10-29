@@ -1,0 +1,1566 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.name }} | MyShop</title>
+
+
+    <style>
+
+        /* ================= GLOBAL ================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+
+        /* ================= HEADER ================= */
+
+        .navbar {
+            background: #2874f0;
+            color: white;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+
+        .cart-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+
+        .cart-link:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+
+        /* ================= BACK BUTTON ================= */
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2874f0;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+
+        .back-btn:hover {
+            color: #1255c4;
+            transform: translateX(-3px);
+        }
+
+
+        /* ================= PRODUCT DETAIL ================= */
+
+        .product-detail {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+
+        /* ================= PRODUCT IMAGE ================= */
+
+        .product-image-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 450px;
+            background: #fafafa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+
+        .detail-image-zoom {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+        }
+
+
+        .detail-image-zoom img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+
+        .detail-zoom-result {
+            display: none;
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border: 2px solid #2874f0;
+            border-radius: 8px;
+            pointer-events: none;
+            background-repeat: no-repeat;
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+
+        /* ================= PRODUCT INFO ================= */
+
+        .product-info {
+            padding: 20px 10px;
+        }
+
+
+        .product-info h1 {
+            font-size: 34px;
+            margin-bottom: 15px;
+        }
+
+
+        .category {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+
+        .price {
+            color: #2874f0;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+
+        .description {
+            color: #555;
+            line-height: 1.7;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+
+        /* ================= STOCK ================= */
+
+        .stock {
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+
+        .available {
+            color: green;
+        }
+
+
+        .out-of-stock {
+            color: red;
+        }
+
+
+        /* ================= QUANTITY ================= */
+
+        .cart-form {
+            margin-top: 15px;
+        }
+
+
+        .quantity-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+
+        .quantity-box label {
+            font-weight: bold;
+        }
+
+
+        .quantity-box input {
+            width: 70px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+
+        .quantity-box input:focus {
+            outline: none;
+            border-color: #2874f0;
+        }
+
+
+        /* ================= 3D BUTTONS ================= */
+
+        .cart-btn,
+        .buy-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 170px;
+
+            padding: 14px 28px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            position: relative;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.2s ease;
+
+            box-shadow:
+                0 6px 0 rgba(0, 0, 0, 0.22),
+                0 10px 20px rgba(0, 0, 0, 0.18);
+        }
+
+
+        /* ================= ADD TO CART ================= */
+
+        .cart-btn {
+
+            background: linear-gradient(
+                145deg,
+                #3d8bfd,
+                #2874f0
+            );
+        }
+
+
+        /* ================= BUY NOW ================= */
+
+        .buy-btn {
+
+            background: linear-gradient(
+                145deg,
+                #ffb52e,
+                #ff9800
+            );
+
+            margin-left: 10px;
+        }
+
+
+        /* ================= BUTTON HOVER ================= */
+
+        .cart-btn:hover,
+        .buy-btn:hover {
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 9px 0 rgba(0, 0, 0, 0.22),
+                0 15px 25px rgba(0, 0, 0, 0.22);
+        }
+
+
+        /* ================= BUTTON PRESS ================= */
+
+        .cart-btn:active,
+        .buy-btn:active {
+
+            transform: translateY(5px);
+
+            box-shadow:
+                0 1px 0 rgba(0, 0, 0, 0.22),
+                0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* ================= DISABLED BUTTON ================= */
+
+        .disabled-btn {
+
+            background: linear-gradient(
+                145deg,
+                #aaa,
+                #888
+            );
+
+            cursor: not-allowed;
+
+            box-shadow:
+                0 5px 0 rgba(0, 0, 0, 0.18),
+                0 8px 15px rgba(0, 0, 0, 0.12);
+        }
+
+
+        .disabled-btn:hover {
+
+            background: linear-gradient(
+                145deg,
+                #aaa,
+                #888
+            );
+
+            transform: none;
+
+            box-shadow:
+                0 5px 0 rgba(0, 0, 0, 0.18),
+                0 8px 15px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* ================= WISHLIST ================= */
+
+        .wishlist-btn {
+
+            display: inline-block;
+
+            margin-top: 12px;
+
+            padding: 12px 25px;
+
+            background: white;
+
+            color: #e91e63;
+
+            border: 2px solid #e91e63;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+
+            box-shadow: 0 4px 0 #b7154a;
+        }
+
+
+        .wishlist-btn:hover {
+
+            background: #e91e63;
+
+            color: white;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 0 #b7154a;
+        }
+
+
+        .wishlist-btn:active {
+
+            transform: translateY(3px);
+
+            box-shadow: 0 2px 0 #b7154a;
+        }
+
+
+        /* ================= REVIEWS ================= */
+
+        .reviews-section {
+
+            max-width: 900px;
+
+            margin: 40px auto;
+
+            padding: 30px;
+
+            background: white;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.12);
+        }
+
+
+        .reviews-section h2 {
+
+            color: #2874f0;
+
+            margin-bottom: 25px;
+
+            font-size: 28px;
+        }
+
+
+        /* ================= REVIEW FORM ================= */
+
+        .review-form {
+
+            background: #f8f9fa;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .review-form h3 {
+
+            margin-bottom: 20px;
+
+            color: #222;
+        }
+
+
+        .review-form label {
+
+            display: block;
+
+            margin-top: 15px;
+
+            margin-bottom: 7px;
+
+            font-weight: bold;
+        }
+
+
+        .review-form select,
+        .review-form textarea {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            font-family: Arial, sans-serif;
+        }
+
+
+        .review-form select:focus,
+        .review-form textarea:focus {
+
+            outline: none;
+
+            border-color: #2874f0;
+
+            box-shadow:
+                0 0 0 2px rgba(40,116,240,0.1);
+        }
+
+
+        .review-form textarea {
+
+            resize: vertical;
+        }
+
+
+        /* ================= SUBMIT REVIEW ================= */
+
+        .submit-review-btn {
+
+            margin-top: 20px;
+
+            padding: 13px 25px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffb52e,
+                    #ff9800
+                );
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 0 #c77800,
+                0 8px 15px rgba(0,0,0,0.15);
+
+            transition: 0.2s;
+        }
+
+
+        .submit-review-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 0 #c77800,
+                0 12px 20px rgba(0,0,0,0.18);
+        }
+
+
+        .submit-review-btn:active {
+
+            transform: translateY(3px);
+
+            box-shadow:
+                0 2px 0 #c77800;
+        }
+
+
+        /* ================= LOGIN REVIEW ================= */
+
+        .login-review {
+
+            text-align: center;
+
+            padding: 25px;
+
+            background: #f8f9fa;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .login-review p {
+
+            color: #555;
+
+            margin-bottom: 10px;
+        }
+
+
+        .review-login-btn {
+
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding: 12px 22px;
+
+            background: #2874f0;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+
+            box-shadow: 0 4px 0 #1555b5;
+
+            transition: 0.2s;
+        }
+
+
+        .review-login-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 0 #1555b5;
+        }
+
+
+        /* ================= REVIEW LIST ================= */
+
+        .review-list {
+
+            margin-top: 35px;
+        }
+
+
+        .review-list h3 {
+
+            margin-bottom: 18px;
+
+            color: #222;
+        }
+
+
+        .review-card {
+
+            background: white;
+
+            border: 1px solid #e5e5e5;
+
+            border-radius: 10px;
+
+            padding: 18px;
+
+            margin-bottom: 15px;
+
+            transition: 0.2s;
+        }
+
+
+        .review-card:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px rgba(0,0,0,0.08);
+        }
+
+
+        .review-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .review-header strong {
+
+            color: #222;
+
+            font-size: 16px;
+        }
+
+
+        .review-stars {
+
+            color: #ff9800;
+
+            letter-spacing: 2px;
+
+            font-size: 17px;
+        }
+
+
+        .review-comment {
+
+            margin-top: 12px;
+
+            color: #555;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+        }
+
+
+        .review-date {
+
+            display: block;
+
+            margin-top: 10px;
+
+            color: #888;
+
+            font-size: 13px;
+        }
+
+
+        /* ================= NO REVIEWS ================= */
+
+        .no-reviews {
+
+            margin-top: 25px;
+
+            padding: 18px;
+
+            background: #f8f9fa;
+
+            border-radius: 10px;
+
+            color: #666;
+
+            text-align: center;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 768px) {
+
+            .navbar {
+
+                padding: 12px 4%;
+            }
+
+
+            .logo {
+
+                font-size: 22px;
+            }
+
+
+            .logo img {
+
+                width: 42px;
+
+                height: 42px;
+            }
+
+
+            .product-detail {
+
+                grid-template-columns: 1fr;
+
+                padding: 20px;
+
+                gap: 20px;
+            }
+
+
+            .product-info {
+
+                padding: 10px 5px;
+            }
+
+
+            .product-info h1 {
+
+                font-size: 26px;
+            }
+
+
+            .price {
+
+                font-size: 28px;
+            }
+
+
+            .product-image-box {
+
+                min-height: 300px;
+            }
+
+
+            .detail-image-zoom {
+
+                height: 300px;
+            }
+
+
+            .detail-zoom-result {
+
+                width: 150px;
+
+                height: 150px;
+            }
+
+
+            .cart-btn,
+            .buy-btn {
+
+                min-width: 140px;
+
+                padding: 12px 18px;
+
+                font-size: 14px;
+            }
+
+
+            .buy-btn {
+
+                margin-left: 5px;
+            }
+
+
+            .wishlist-btn {
+
+                display: block;
+
+                width: fit-content;
+
+                margin-top: 18px;
+            }
+
+
+            .reviews-section {
+
+                width: 95%;
+
+                padding: 20px;
+
+                margin: 30px auto;
+            }
+
+
+            .reviews-section h2 {
+
+                font-size: 23px;
+            }
+
+
+            .review-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 8px;
+            }
+
+        }
+
+        /* ================= AVERAGE RATING ================= */
+
+.average-rating {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.rating-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #222;
+}
+
+.rating-stars {
+    color: #ff9800;
+    font-size: 22px;
+    letter-spacing: 2px;
+}
+
+.rating-count {
+    color: #666;
+    font-size: 14px;
+}
+
+.no-rating {
+    background: #f8f9fa;
+    border-color: #ddd;
+}
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <nav class="navbar">
+
+
+        <div class="logo">
+
+            <img
+                src="{% static 'images/my shop logo.png' %}"
+                alt="MyShop Logo"
+            >
+
+            <span>
+                MyShop
+            </span>
+
+        </div>
+
+
+        <a
+            href="{% url 'cart' %}"
+            class="cart-link"
+        >
+            🛒 Cart
+        </a>
+
+
+    </nav>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+
+        <!-- BACK BUTTON -->
+
+        <a
+            href="{% url 'home' %}"
+            class="back-btn"
+        >
+            ← Back to Products
+        </a>
+
+
+
+        <!-- ================= PRODUCT DETAIL ================= -->
+
+        <div class="product-detail">
+
+
+            <!-- ================= PRODUCT IMAGE ================= -->
+
+            <div class="product-image-box">
+
+
+                {% if product.image %}
+
+                    <div class="detail-image-zoom">
+
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                        >
+
+                        <div class="detail-zoom-result"></div>
+
+                    </div>
+
+                {% else %}
+
+                    <p>
+                        No image available
+                    </p>
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- ================= PRODUCT INFORMATION ================= -->
+
+            <div class="product-info">
+
+
+                <!-- PRODUCT NAME -->
+
+                <h1>
+                    {{ product.name }}
+                </h1>
+
+
+
+                <!-- CATEGORY -->
+
+                <div class="category">
+
+                    Category:
+                    {{ product.category.name }}
+
+                </div>
+
+
+
+                <!-- PRICE -->
+
+                <div class="price">
+
+                    ₹{{ product.price }}
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="description">
+
+                    {{ product.description }}
+
+                </div>
+
+
+
+                <!-- ================= STOCK ================= -->
+
+                {% if product.stock > 0 %}
+
+
+                    <div class="stock available">
+
+                        ✓ In Stock
+
+                        <br>
+
+                        {{ product.stock }}
+                        units available
+
+                    </div>
+
+
+
+                    <!-- ================= QUANTITY + CART ================= -->
+
+                    <form
+                        action="{% url 'add_to_cart' product.id %}"
+                        method="GET"
+                        class="cart-form"
+                    >
+
+
+                        <div class="quantity-box">
+
+
+                            <label for="quantity">
+
+                                Quantity:
+
+                            </label>
+
+
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                value="1"
+                                min="1"
+                                max="{{ product.stock }}"
+                            >
+
+
+                        </div>
+
+
+
+                        <button
+                            type="submit"
+                            class="cart-btn"
+                        >
+
+                            🛒 Add to Cart
+
+                        </button>
+
+
+
+                        <a
+                            href="{% url 'add_to_wishlist' product.id %}"
+                            class="wishlist-btn"
+                        >
+                            ❤️ Add to Wishlist
+                        </a>
+
+
+
+                        <button
+                            type="submit"
+                            formaction="{% url 'buy_now' product.id %}"
+                            class="buy-btn"
+                        >
+                            ⚡ Buy Now
+                        </button>
+
+
+                    </form>
+
+
+                {% else %}
+
+
+                    <!-- ================= OUT OF STOCK ================= -->
+
+                    <div class="stock out-of-stock">
+
+                        ✕ Out of Stock
+
+                    </div>
+
+
+                    <button
+                        class="cart-btn disabled-btn"
+                        disabled
+                    >
+
+                        Out of Stock
+
+                    </button>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= REVIEWS ================= -->
+
+        <div class="reviews-section">
+
+
+            <h2>
+                ⭐ Customer Reviews
+            </h2>
+
+            {% if review_count > 0 %}
+
+    <div class="average-rating">
+
+        <div class="rating-number">
+            {{ average_rating|floatformat:1 }}
+        </div>
+
+        <div class="rating-stars">
+
+    {% if average_rating >= 5 %}
+        ⭐⭐⭐⭐⭐
+    {% elif average_rating >= 4 %}
+        ⭐⭐⭐⭐☆
+    {% elif average_rating >= 3 %}
+        ⭐⭐⭐☆☆
+    {% elif average_rating >= 2 %}
+        ⭐⭐☆☆☆
+    {% elif average_rating >= 1 %}
+        ⭐☆☆☆☆
+    {% else %}
+        ☆☆☆☆☆
+    {% endif %}
+
+</div>
+
+        <div class="rating-count">
+            Based on {{ review_count }} review{{ review_count|pluralize }}
+        </div>
+
+    </div>
+
+{% else %}
+
+    <div class="average-rating no-rating">
+
+        <div class="rating-number">
+            No rating yet
+        </div>
+
+        <div class="rating-count">
+            Be the first to review this product!
+        </div>
+
+    </div>
+
+{% endif %}
+
+
+            <!-- ================= REVIEW FORM ================= -->
+
+            {% if user.is_authenticated %}
+
+
+                <div class="review-form">
+
+                    <h3>
+                        Write a Review
+                    </h3>
+
+
+                    <form
+                        method="POST"
+                        action="{% url 'add_review' product.id %}"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <label for="rating">
+                            Rating
+                        </label>
+
+
+                        <select
+                            name="rating"
+                            id="rating"
+                            required
+                        >
+
+                            <option value="">
+                                Select Rating
+                            </option>
+
+                            <option value="5">
+                                ⭐⭐⭐⭐⭐ 5 - Excellent
+                            </option>
+
+                            <option value="4">
+                                ⭐⭐⭐⭐ 4 - Very Good
+                            </option>
+
+                            <option value="3">
+                                ⭐⭐⭐ 3 - Good
+                            </option>
+
+                            <option value="2">
+                                ⭐⭐ 2 - Average
+                            </option>
+
+                            <option value="1">
+                                ⭐ 1 - Poor
+                            </option>
+
+                        </select>
+
+
+
+                        <label for="comment">
+                            Your Review
+                        </label>
+
+
+                        <textarea
+                            name="comment"
+                            id="comment"
+                            rows="5"
+                            placeholder="Write your experience with this product..."
+                            required
+                        ></textarea>
+
+
+
+                        <button
+                            type="submit"
+                            class="submit-review-btn"
+                        >
+
+                            ⭐ Submit Review
+
+                        </button>
+
+
+                    </form>
+
+                </div>
+
+
+            {% else %}
+
+
+                <div class="login-review">
+
+                    <p>
+                        Please login to write a review.
+                    </p>
+
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="review-login-btn"
+                    >
+                        Login to Review
+                    </a>
+
+                </div>
+
+
+            {% endif %}
+
+
+
+            <!-- ================= DISPLAY REVIEWS ================= -->
+
+            {% if reviews %}
+
+                <div class="review-list">
+
+                    <h3>
+                        Customer Reviews
+                    </h3>
+
+
+                    {% for review in reviews %}
+
+                        <div class="review-card">
+
+
+                            <div class="review-header">
+
+
+                                <strong>
+                                    {{ review.user.username }}
+                                </strong>
+
+
+                                <span class="review-stars">
+
+
+                                    {% if review.rating == 5 %}
+
+                                        ⭐⭐⭐⭐⭐
+
+                                    {% elif review.rating == 4 %}
+
+                                        ⭐⭐⭐⭐
+
+                                    {% elif review.rating == 3 %}
+
+                                        ⭐⭐⭐
+
+                                    {% elif review.rating == 2 %}
+
+                                        ⭐⭐
+
+                                    {% else %}
+
+                                        ⭐
+
+                                    {% endif %}
+
+
+                                </span>
+
+
+                            </div>
+
+
+                            <p class="review-comment">
+
+                                {{ review.comment }}
+
+                            </p>
+
+
+                            <small class="review-date">
+
+                                {{ review.created_at|date:"d M Y" }}
+
+                            </small>
+
+
+                        </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            {% else %}
+
+
+                <p class="no-reviews">
+
+                    No reviews yet.
+                    Be the first to review this product!
+
+                </p>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- ================= IMAGE ZOOM JAVASCRIPT ================= -->
+
+    <script>
+
+        const zoomBox =
+            document.querySelector('.detail-image-zoom');
+
+
+        if (zoomBox) {
+
+            const image =
+                zoomBox.querySelector('img');
+
+
+            const zoomResult =
+                zoomBox.querySelector('.detail-zoom-result');
+
+
+            zoomBox.addEventListener(
+                'mousemove',
+                function(event) {
+
+                    const rect =
+                        zoomBox.getBoundingClientRect();
+
+
+                    const x =
+                        event.clientX - rect.left;
+
+
+                    const y =
+                        event.clientY - rect.top;
+
+
+                    const zoomWidth = 220;
+
+                    const zoomHeight = 220;
+
+
+                    let left =
+                        x - (zoomWidth / 2);
+
+
+                    let top =
+                        y - (zoomHeight / 2);
+
+
+                    if (left < 0) {
+
+                        left = 0;
+
+                    }
+
+
+                    if (top < 0) {
+
+                        top = 0;
+
+                    }
+
+
+                    if (left + zoomWidth > rect.width) {
+
+                        left =
+                            rect.width - zoomWidth;
+
+                    }
+
+
+                    if (top + zoomHeight > rect.height) {
+
+                        top =
+                            rect.height - zoomHeight;
+
+                    }
+
+
+                    zoomResult.style.left =
+                        left + 'px';
+
+
+                    zoomResult.style.top =
+                        top + 'px';
+
+
+                    const percentX =
+                        (x / rect.width) * 100;
+
+
+                    const percentY =
+                        (y / rect.height) * 100;
+
+
+                    zoomResult.style.backgroundImage =
+                        "url('" + image.src + "')";
+
+
+                    zoomResult.style.backgroundSize =
+                        '250% 250%';
+
+
+                    zoomResult.style.backgroundPosition =
+                        percentX + '% ' + percentY + '%';
+
+
+                    zoomResult.style.display =
+                        'block';
+
+                }
+            );
+
+
+            zoomBox.addEventListener(
+                'mouseleave',
+                function() {
+
+                    zoomResult.style.display =
+                        'none';
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
