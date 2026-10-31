@@ -81,15 +81,8 @@ WSGI_APPLICATION = 'my_shop.wsgi.application'
 # Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'myshop_db',
-        'USER': 'myshop_user',
-        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
